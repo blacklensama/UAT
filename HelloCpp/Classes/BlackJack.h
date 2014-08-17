@@ -31,6 +31,8 @@ public:
 
 	void calcResult();
 
+	virtual void keyBackClicked();
+
 	CREATE_FUNC(BlackJack);
 
 	void win();

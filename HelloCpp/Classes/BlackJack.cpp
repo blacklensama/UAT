@@ -3,6 +3,19 @@
 
 USING_NS_CC;
 
+
+void BlackJack::keyBackClicked()
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+	CCMessageBox("You pressed the close button. Windows Store Apps do not implement a close button.","Alert");
+#else
+	CCDirector::sharedDirector()->end();
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+	exit(0);
+#endif
+#endif
+}
+
 CCScene* BlackJack::scene()
 {
 	
@@ -18,11 +31,14 @@ CCScene* BlackJack::scene()
 
 void BlackJack::initMenu()
 {
+	CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
+	CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
+
 	result = CCLabelTTF::create("0", "Arial", 24);
 	
 	result->setColor(ccc3(0, 0, 0));
 
-	result->setPosition(ccp(300, 400));
+	result->setPosition(ccp(visibleSize.width/8*3, visibleSize.width/2));
 
 	result->setVisible(false);
 
@@ -35,7 +51,7 @@ void BlackJack::initMenu()
 
 	resultMenu->setVisible(false);
 
-	resultMenu->setPosition(ccp(300, 330));
+	resultMenu->setPosition(ccp(visibleSize.width/8*3, visibleSize.width/8*3));
 
 	this->addChild(resultMenu);
 }
@@ -47,8 +63,15 @@ bool BlackJack::init()
 		return false;
 	}
 
+	this->setKeypadEnabled(true);
+
 	CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 	CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
+
+	std::cout << visibleSize.width << " " << visibleSize.height << std::endl;
+
+	std::cout << origin.x << " " << origin.y << std::endl;
+
 
 	CCSprite* sprite = CCSprite::create("writebg.png");
 
@@ -56,25 +79,15 @@ bool BlackJack::init()
 
 	this->addChild(sprite);
 
-	int x = 0;
-	int y = 350;
-	for (int i = 0; i < 50; i++)
-	{
-		CCSprite* temp = CCSprite::create("pukeImage1/3.jpg");
-		temp->setPosition(ccp(x, y));
-		x += 10;
-		//this->addChild(temp);
-	}
-
 	PlayerLayer* pl1 = PlayerLayer::create();
 
-	pl1->setPosition(ccp(50, 50));
+	pl1->setPosition(ccp(visibleSize.width/16, visibleSize.height/12.8));
 
-	pl1->useMenu(true);
+	pl1->useMenu(false);
 
 	PlayerLayer* pl2 = PlayerLayer::create();
 
-	pl2->setPosition(ccp(400, 400));
+	pl2->setPosition(ccp(visibleSize.width/2, visibleSize.height/1.6));
 
 	pl2->useMenu(false);
 
@@ -102,11 +115,7 @@ bool PlayerLayer::init()
 		return false;
 	}
 
-	restart();
-
-	//useMenu();
-
-	
+	restart();	
 
 	return true;
 }
@@ -124,15 +133,20 @@ void PlayerLayer::restart()
 
 void PlayerLayer::useMenu(bool flag = true)
 {
-	CCLabelTTF* ttf = CCLabelTTF::create("player", "Arial", 24);
+	CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
+	CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
-	CCLabelTTF* ttf1 = CCLabelTTF::create("0", "Arial", 24);
+	std::cout << visibleSize.width;
 
-	ttf->setPosition(ccp(0,150));
+	CCLabelTTF* ttf = CCLabelTTF::create("player", "Arial", 12);
+
+	CCLabelTTF* ttf1 = CCLabelTTF::create("0", "Arial", 12);
+
+	ttf->setPosition(ccp(origin.x, visibleSize.height/3));
 
 	ttf->setColor(ccc3(0,0,0));
 
-	ttf1->setPosition(ccp(100, 150));
+	ttf1->setPosition(ccp(visibleSize.width/8, visibleSize.height/3));
 
 	ttf1->setColor(ccc3(0,0,0));
 
@@ -147,12 +161,12 @@ void PlayerLayer::useMenu(bool flag = true)
 	CCMenuItemImage* addCard = CCMenuItemImage::create("addCard.png", "addCard.png", 
 							this, menu_selector(PlayerLayer::addCard));
 
-	addCard->setPosition(ccp(200, 200));
+	addCard->setPosition(ccp(visibleSize.width/4,visibleSize.height/3.2));
 
 	CCMenuItemImage* noCard = CCMenuItemImage::create("noCard.png", "noCard.png",
 							this, menu_selector(PlayerLayer::calc));
 
-	noCard->setPosition(ccp(300, 200));
+	noCard->setPosition(ccp(visibleSize.width/8*3, visibleSize.height/3.2));
 
 	CCMenu* menu = CCMenu::create(addCard, noCard, NULL);
 
@@ -165,6 +179,9 @@ void PlayerLayer::useMenu(bool flag = true)
 
 void PlayerLayer::addCard(CCObject* pSender)
 {
+	CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
+	CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
+
 	int num = rand()%13 + 1;
 	sum += num;
 
@@ -180,7 +197,7 @@ void PlayerLayer::addCard(CCObject* pSender)
 
 	CCSprite* sprite = CCSprite::create(str.c_str());
 
-	sprite->setPosition(ccp(50 + 100*(card.size()-1),50));
+	sprite->setPosition(ccp(visibleSize.width/16 + visibleSize.width/8*(card.size()-1),visibleSize.width/16));
 
 	this->addChild(sprite);
 	
@@ -189,7 +206,7 @@ void PlayerLayer::addCard(CCObject* pSender)
 
 	if (sum > 21)
 	{
-		
+		((BlackJack*)this->getParent())->over();
 	}
 }
 
@@ -233,9 +250,6 @@ void BlackJack::calcResult()
 
 void BlackJack::win()
 {
-	((PlayerLayer*)this->getChildByTag(11))->restart();
-
-	((PlayerLayer*)this->getChildByTag(12))->restart();
 
 	result->setString("win");
 
@@ -246,10 +260,7 @@ void BlackJack::win()
 
 void BlackJack::over()
 {
-	((PlayerLayer*)this->getChildByTag(11))->restart();
-
-	((PlayerLayer*)this->getChildByTag(12))->restart();
-
+	
 	result->setString("over");
 
 	result->setVisible(true);
@@ -259,6 +270,10 @@ void BlackJack::over()
 
 void BlackJack::restart(CCObject* pSender)
 {
+	((PlayerLayer*)this->getChildByTag(11))->restart();
+
+	((PlayerLayer*)this->getChildByTag(12))->restart();
+
 	result->setVisible(false);
 
 	resultMenu->setVisible(false);

@@ -3,6 +3,17 @@
 #include "list.h"
 USING_NS_CC;
 
+void HelloWorld::keyBackClicked()
+{
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+	CCMessageBox("You pressed the close button. Windows Store Apps do not implement a close button.","Alert");
+#else
+	CCDirector::sharedDirector()->end();
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+	exit(0);
+#endif
+#endif
+}
 
 void HelloWorld::updateUI(float dt)
 {
@@ -44,14 +55,6 @@ CCScene* HelloWorld::scene()
     // add layer as a child to scene
     scene->addChild(layer, 0, 1);
 
-	CCLabelTTF* testTTF = CCLabelTTF::create("test", "Arial", 24);
-
-	testTTF->setColor(ccc3(255, 0, 0));
-
-	testTTF->setPosition(ccp(100, 100));
-
-	scene->addChild(testTTF, 1, 100);
-
 	std::cout << "he";
 
     // return the scene
@@ -61,13 +64,17 @@ CCScene* HelloWorld::scene()
 // on "init" you need to initialize your instance
 bool HelloWorld::init()
 {
-    //////////////////////////////
+	
+	
+	//////////////////////////////
     // 1. super init first
     if ( !CCLayer::init() )
     {
         return false;
     }
     
+	this->setKeypadEnabled(true);
+
     CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
@@ -137,6 +144,25 @@ bool HelloWorld::init()
 
     // add the sprite as a child to this layer
     this->addChild(pSprite, 0);
+
+	CCTextFieldTTF* text = CCTextFieldTTF::textFieldWithPlaceHolder(  
+		"Input Your Name...", "Arial", 20);  
+
+	text->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height/3));
+
+	this->addChild(text);
+
+	text->setColor(ccc3(0, 255, 255));
+
+	text->attachWithIME();
+
+	CCLabelTTF* testTTF = CCLabelTTF::create("test", "Arial", 24);
+
+	testTTF->setColor(ccc3(255, 0, 0));
+
+	testTTF->setPosition(ccp(visibleSize.width/8, visibleSize.height/6));
+
+	this->addChild(testTTF, 1, 100);
 
     return true;
 }
