@@ -172,14 +172,14 @@ void* test_thread(void* arge)
 	SOCKET sListen, sServer; //侦听套接字，连接套接字
 	struct sockaddr_in saServer, saClient; //地址信息   
 	char *ptr;//用于遍历信息的指针   
-
+	std::string str;
 	//创建Socket,使用TCP协议
 	sListen=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 	//构建本地地址信息
 	saServer.sin_family = AF_INET; //地址家族
 	saServer.sin_port = htons(9907); //注意转化为网络字节序
-	saServer.sin_addr.s_addr = htonl(INADDR_ANY);  //使用INADDR_ANY 指示任意地址
+	saServer.sin_addr.s_addr = htonl(INADDR_ANY); //使用INADDR_ANY 指示任意地址
 
 	//绑定
 	ret = bind(sListen, (struct sockaddr *)&saServer, sizeof(saServer));
@@ -190,34 +190,38 @@ void* test_thread(void* arge)
 	printf("Waiting for client connecting!\n");
 	printf("Tips: Ctrl+c to quit!\n");
 	//阻塞等待接受客户端连接
+	
+
+	int len;
 	while(1)//循环监听客户端，永远不停止，所以，在本项目中，我们没有心跳包。
 	{
 		length = sizeof(saClient);
 		sServer = accept(sListen, (struct sockaddr *)&saClient, &length);
+		
+		char sendMessage[]="hello client";  //发送信息给客户端  
+		send(sServer,sendMessage,strlen(sendMessage)+1,0);  
 
 		char receiveMessage[5000];
+
 		nLeft = sizeof(receiveMessage);
 		ptr = (char *)&receiveMessage;
-		while(nLeft>0)
-		{
-			//接收数据
-			ret = recv(sServer, ptr, 5000, 0);
-			if (ret == SOCKET_ERROR)
-			{
-				printf("recv() failed!\n");
-				return NULL;
-			}
-			if (ret == 0) //客户端已经关闭连接
-			{
-				printf("Client has closed the connection\n");
-				break;
-			}
-			nLeft -= ret;
-			ptr += ret;
-		}  
-		printf("receive message:%s\n", receiveMessage);//打印我们接收到的消息。
 
-		singletion::Instance()->add(std::string(receiveMessage));
+		while((len=recv(sServer,ptr, BUFSIZ,0))>0)  
+		{  
+			ptr[len]='/0';  
+			printf("receive message:%s\n", receiveMessage); 
+			singletion::Instance()->add(std::string(ptr));
+			do 
+			{
+				str = singletion::Instance()->getResult();
+			} while (str == "");
+			
+			if(send(sServer,ptr,len,0)<0)  
+			{  
+				perror("write");  
+				return NULL;  
+			}  
+		}  		
 	} 
 
 	ODSocket::Clean();

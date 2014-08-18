@@ -131,6 +131,11 @@ void PlayerLayer::restart()
 	useMenu(true);
 }
 
+void PlayerLayer::resetMenu(bool flag)
+{
+	this->getChildByTag(20)->setVisible(flag);
+}
+
 void PlayerLayer::useMenu(bool flag = true)
 {
 	CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
@@ -250,6 +255,9 @@ void BlackJack::calcResult()
 
 void BlackJack::win()
 {
+	((PlayerLayer*)this->getChildByTag(11))->resetMenu(false);
+
+	((PlayerLayer*)this->getChildByTag(12))->resetMenu(false);
 
 	result->setString("win");
 
@@ -260,7 +268,10 @@ void BlackJack::win()
 
 void BlackJack::over()
 {
-	
+	((PlayerLayer*)this->getChildByTag(11))->resetMenu(false);
+
+	((PlayerLayer*)this->getChildByTag(12))->resetMenu(false);
+
 	result->setString("over");
 
 	result->setVisible(true);

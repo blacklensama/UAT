@@ -25,13 +25,16 @@ void HelloWorld::updateUI(float dt)
 	}
 	std::cout << str << std::endl;
 	
-	CCNode* node = CCDirector::sharedDirector()->getRunningScene();
+	CCNode* node = CCDirector::sharedDirector()->getRunningScene()->getChildByTag(1);
 
 	if (node != NULL)
 	{
 		std::cout << node->getChildrenCount() << std::endl;
 		CCLabelTTF* ttf = (CCLabelTTF*)node->getChildByTag(100);
 		ttf->setString(str.c_str());
+		Command c(str);
+		c.print();
+		singletion::Instance()->setResult("hello world");
 	}
 
 	
@@ -45,7 +48,7 @@ CCScene* HelloWorld::scene()
     // 'scene' is an autorelease object
     CCScene *scene = CCScene::create();
 
-	scene->schedule(schedule_selector(HelloWorld::updateUI), 0.5f);
+	scene->schedule(schedule_selector(HelloWorld::updateUI), 0.0);
 
 	scene->scheduleUpdate();
 
@@ -54,8 +57,6 @@ CCScene* HelloWorld::scene()
 
     // add layer as a child to scene
     scene->addChild(layer, 0, 1);
-
-	std::cout << "he";
 
     // return the scene
     return scene;
@@ -117,7 +118,7 @@ bool HelloWorld::init()
     // create menu, it's an autorelease object
     CCMenu* pMenu = CCMenu::create(pCloseItem, pStartItem , pExitItem,NULL);
     pMenu->setPosition(CCPointZero);
-    this->addChild(pMenu, 1);
+    this->addChild(pMenu, 1, 1);
 
 	
 
@@ -134,7 +135,7 @@ bool HelloWorld::init()
                             origin.y + visibleSize.height - pLabel->getContentSize().height));
 
     // add the label as a child to this layer
-    this->addChild(pLabel, 1);
+    this->addChild(pLabel, 1, 2);
 
     // add "HelloWorld" splash screen"
     CCSprite* pSprite = CCSprite::create("writebg.png");
@@ -143,14 +144,14 @@ bool HelloWorld::init()
     pSprite->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
 
     // add the sprite as a child to this layer
-    this->addChild(pSprite, 0);
+    this->addChild(pSprite, 0, 3);
 
 	CCTextFieldTTF* text = CCTextFieldTTF::textFieldWithPlaceHolder(  
 		"Input Your Name...", "Arial", 20);  
 
 	text->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height/3));
 
-	this->addChild(text);
+	this->addChild(text, 4, 4);
 
 	text->setColor(ccc3(0, 255, 255));
 

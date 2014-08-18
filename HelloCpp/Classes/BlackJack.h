@@ -10,6 +10,7 @@ public:
 	void addCard(CCObject* pSender);
 	void restart();
 	void useMenu(bool flag);
+	void resetMenu(bool flag);
 	void resetTheSum();
 	void calc(CCObject* pSender);
 	int getSum();
