@@ -1,6 +1,6 @@
 #include "HelloWorldScene.h"
 #include "BlackJack.h"
-#include "list.h"
+#include "SDK/list.h"
 USING_NS_CC;
 
 void HelloWorld::keyBackClicked()
@@ -23,18 +23,14 @@ void HelloWorld::updateUI(float dt)
 	{
 		return;
 	}
-	std::cout << str << std::endl;
-	
-	CCNode* node = CCDirector::sharedDirector()->getRunningScene()->getChildByTag(1);
+
+	CCNode* node = CCDirector::sharedDirector()->getRunningScene();
 
 	if (node != NULL)
 	{
-		std::cout << node->getChildrenCount() << std::endl;
-		CCLabelTTF* ttf = (CCLabelTTF*)node->getChildByTag(100);
-		ttf->setString(str.c_str());
+		std::cout << str << std::endl;
 		Command c(str);
-		c.print();
-		singletion::Instance()->setResult("hello world");
+		singletion::Instance()->setResult(singletion::Instance()->execute(c).ToJson());
 	}
 
 	
@@ -114,11 +110,13 @@ bool HelloWorld::init()
 
 	pExitItem->setPosition(ccp(origin.x + visibleSize.width/2,
 		origin.y + visibleSize.height - 100));
-
+	
+	pStartItem->setTag(1);
+	pExitItem->setTag(2);
     // create menu, it's an autorelease object
-    CCMenu* pMenu = CCMenu::create(pCloseItem, pStartItem , pExitItem,NULL);
-    pMenu->setPosition(CCPointZero);
-    this->addChild(pMenu, 1, 1);
+     CCMenu* pMenu = CCMenu::create(pCloseItem, pStartItem , pExitItem,NULL);
+     pMenu->setPosition(CCPointZero);
+     this->addChild(pMenu, 1, 1);
 
 	
 
@@ -128,14 +126,14 @@ bool HelloWorld::init()
     // add a label shows "Hello World"
     // create and initialize a label
     
-    CCLabelTTF* pLabel = CCLabelTTF::create("Hello World", "Arial", 24);
-    
-    // position the label on the center of the screen
-    pLabel->setPosition(ccp(origin.x + visibleSize.width/2,
-                            origin.y + visibleSize.height - pLabel->getContentSize().height));
-
-    // add the label as a child to this layer
-    this->addChild(pLabel, 1, 2);
+//     CCLabelTTF* pLabel = CCLabelTTF::create("Hello World", "Arial", 24);
+//     
+//     // position the label on the center of the screen
+//     pLabel->setPosition(ccp(origin.x + visibleSize.width/2,
+//                             origin.y + visibleSize.height - pLabel->getContentSize().height));
+// 
+//     // add the label as a child to this layer
+//     this->addChild(pLabel, 1, 2);
 
     // add "HelloWorld" splash screen"
     CCSprite* pSprite = CCSprite::create("writebg.png");
@@ -146,16 +144,16 @@ bool HelloWorld::init()
     // add the sprite as a child to this layer
     this->addChild(pSprite, 0, 3);
 
-	CCTextFieldTTF* text = CCTextFieldTTF::textFieldWithPlaceHolder(  
-		"Input Your Name...", "Arial", 20);  
-
-	text->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height/3));
-
-	this->addChild(text, 4, 4);
-
-	text->setColor(ccc3(0, 255, 255));
-
-	text->attachWithIME();
+// 	CCTextFieldTTF* text = CCTextFieldTTF::textFieldWithPlaceHolder(  
+// 		"Input Your Name...", "Arial", 20);  
+// 
+// 	text->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height/3));
+// 
+// 	this->addChild(text, 4, 4);
+// 
+// 	text->setColor(ccc3(0, 255, 255));
+// 
+// 	text->attachWithIME();
 
 	CCLabelTTF* testTTF = CCLabelTTF::create("test", "Arial", 24);
 

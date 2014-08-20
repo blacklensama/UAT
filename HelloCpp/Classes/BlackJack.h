@@ -14,10 +14,12 @@ public:
 	void resetTheSum();
 	void calc(CCObject* pSender);
 	int getSum();
+	void setAI(bool flag);
+	int openCard();
 protected:
 private:
 	std::list<int> card;
-
+	bool isAI;			//false为玩家，true为电脑
 	int sum;
 };
 
@@ -43,6 +45,8 @@ public:
 	void restart(CCObject* pSender);
 protected:
 private:
+
+
 	PlayerLayer* pl1;
 	PlayerLayer* pl2;
 

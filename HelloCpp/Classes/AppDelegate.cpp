@@ -1,6 +1,6 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
-#include "list.h"
+#include "SDK/list.h"
 
 USING_NS_CC;
 
@@ -23,7 +23,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     pDirector->setOpenGLView(pEGLView);
 	
     // turn on display FPS
-    pDirector->setDisplayStats(FALSE);
+    pDirector->setDisplayStats(false);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     pDirector->setAnimationInterval(1.0 / 60);
